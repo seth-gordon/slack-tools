@@ -75,7 +75,7 @@ def slack_deployment_info():
     """
     # TODO: Need to add error handling in case the environment given doesn't
     # exist in our dict.
-    text = request.form['text'].trim()
+    text = request.form['text'].strip()
     environment = text.split(' ')[0].lower()
 
     connect = requests.get(ENVIRONMENT_URLS[environment][0])
