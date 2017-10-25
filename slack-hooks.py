@@ -1,13 +1,14 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # coding:utf-8
 # Copyright 2017 Scout Exchange, LLC. All Rights Reserved.
-from flask import Flask, jsonify, request
 import json
 import requests
+from flask import Flask, jsonify, request
 
 
 app = Flask(__name__)
-# we should test request tokens to make sure they came from slack.
+app.config['port'] = 4000
+# we should check request tokens to make sure they came from slack.
 app.config['token'] = '3TXXJyr3EHFhDDMTqDT2TlPl'
 
 ENVIRONMENT_URLS = {
@@ -87,4 +88,4 @@ def slack_deployment_info():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=4000)
+    app.run(host='0.0.0.0', port=app.config['port'])
