@@ -11,14 +11,10 @@ app.config['port'] = 4000
 # we should check request tokens to make sure they came from slack.
 app.config['token'] = '3TXXJyr3EHFhDDMTqDT2TlPl'
 
-ENVIRONMENT_URLS = {
-    'blackops': ['https://blackops-connect.goscoutgo.com/deployment_info.json',
-                 'https://blackops.talentpx.com/deployment_info.json'],
-    'staging': ['https://staging-connect.goscoutgo.com/deployment_info.json',
-                'https://staging.talentpx.com/deployment_info.json'],
-    'demob': ['https://demob-connect.goscoutgo.com/deployment_info.json',
-              'https://demob.talentpx.com/deployment_info.json']
-}
+BUILD_INFO_URLS = {
+    'connect': 'https://{env}-connect.goscoutgo.com/deployment_info.json',
+    'tpx': 'https://{env}.talentpx.com/deployment_info.json'
+    }
 
 
 @app.route('/test-hook', methods=['POST'])
@@ -79,12 +75,19 @@ def slack_deployment_info():
     text = request.form['text'].strip()
     environment = text.split(' ')[0].lower()
 
-    connect = requests.get(ENVIRONMENT_URLS[environment][0])
-    tpx = requests.get(ENVIRONMENT_URLS[environment][1])
+    info = _get_deployment_info(environment)
+    return jsonify(info)
+
+
+def _get_deployment_info(environment):
+    # TODO: Need to add error handling in case the environment given doesn't
+    # exist in our dict.
+    connect = requests.get(BUILD_INFO_URLS['connect'].format(env=environment))
+    tpx = requests.get(BUILD_INFO_URLS['tpx'].format(env=environment))
     info = {'connect': json.loads(connect.text),
             'tpx': json.loads(tpx.text)
             }
-    return jsonify(info)
+    return info
 
 
 if __name__ == '__main__':
